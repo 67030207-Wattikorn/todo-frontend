@@ -12,6 +12,10 @@ permissions:
   pages: write
   id-token: write
 
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
   build:
     name: Build Next.js App
@@ -26,6 +30,11 @@ jobs:
         with:
           node-version: "18"
 
+      - name: Clear cache
+        run: |
+          rm -rf .next
+          rm -rf node_modules/.cache
+
       - name: Install dependencies
         run: npm ci
 
@@ -37,7 +46,7 @@ jobs:
           NEXT_PUBLIC_API_URL: https://flask-todo-app-90g0.onrender.com/api
         run: |
           npm run build
-          npm run export  # สร้าง static site ไปที่ ./out
+          npm run export  # สร้าง static site ใน ./out
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
